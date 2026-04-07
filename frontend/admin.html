@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — NEXARA</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div id="toast-container"></div>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="glass-card login-card">
+    <div class="login-logo">
+      <div class="login-logo-text">NEXARA</div>
+      <div class="login-subtitle">Admin Control Panel</div>
+    </div>
+    <h2 class="login-title">🔐 Secure Access</h2>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" id="admin-user" class="form-control" placeholder="Admin username" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" id="admin-pass" class="form-control" placeholder="Password"
+             onkeydown="if(event.key==='Enter') adminLogin()" />
+    </div>
+    <button class="btn btn-primary btn-block" onclick="adminLogin()">⚡ Enter Admin Panel</button>
+    <div class="login-hint">Default: nexara_admin / nexara@2025</div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD (hidden until login) -->
+<div id="admin-dashboard" style="display:none;">
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="22" r="20" stroke="#00f5ff" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.5"/>
+        <path d="M22 8L22 36 M8 22L36 22" stroke="#00f5ff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="22" cy="22" r="4" fill="#00f5ff" opacity="0.8"/>
+      </svg>
+      <span class="logo-text">NEX<span>A</span>RA</span>
+    </a>
+    <div style="font-family:var(--font-display); font-size:0.7rem; letter-spacing:0.1em; color:var(--cyan);">
+      🛡️ ADMIN CONTROL CENTER
+    </div>
+    <button class="btn btn-sm" onclick="adminLogout()" style="color:var(--text-muted); border:1px solid var(--border); background:transparent;">
+      Sign Out
+    </button>
+  </nav>
+
+  <div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Navigation</div>
+        <div class="sidebar-link active" onclick="showPanel('overview')" id="nav-overview">
+          <span class="sidebar-link-icon">📊</span> Overview
+        </div>
+        <div class="sidebar-link" onclick="showPanel('drivers')" id="nav-drivers">
+          <span class="sidebar-link-icon">🚑</span> Drivers
+        </div>
+        <div class="sidebar-link" onclick="showPanel('sos')" id="nav-sos">
+          <span class="sidebar-link-icon">🆘</span> SOS Logs
+          <span class="sidebar-badge" id="pending-badge">0</span>
+        </div>
+        <div class="sidebar-link" onclick="showPanel('complaints')" id="nav-complaints">
+          <span class="sidebar-link-icon">📩</span> Complaints
+        </div>
+        <div class="sidebar-link" onclick="showPanel('analytics')" id="nav-analytics">
+          <span class="sidebar-link-icon">📈</span> Analytics
+        </div>
+      </div>
+      <div class="sidebar-section" style="margin-top:auto; padding-top:20px;">
+        <a href="dispatch.html" class="sidebar-link" style="color:var(--purple);">
+          <span class="sidebar-link-icon">🛰️</span> Dispatch Center
+        </a>
+        <a href="index.html" class="sidebar-link">
+          <span class="sidebar-link-icon">🏠</span> Home
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="admin-content">
+
+      <!-- OVERVIEW PANEL -->
+      <div class="admin-panel active" id="panel-overview">
+        <div class="section-header">
+          <div class="section-icon">📊</div>
+          <div>
+            <div class="section-title">System Overview</div>
+            <div class="section-subtitle">Real-time NEXARA metrics</div>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="refreshStats()" style="margin-left:auto;">↻ Refresh</button>
+        </div>
+
+        <div class="stats-row">
+          <div class="glass-card stat-card stat-cyan">
+            <div class="stat-card-icon">🆘</div>
+            <div class="stat-card-value" id="s-total">0</div>
+            <div class="stat-card-label">Total SOS</div>
+          </div>
+          <div class="glass-card stat-card stat-red">
+            <div class="stat-card-icon">⏳</div>
+            <div class="stat-card-value" id="s-pending">0</div>
+            <div class="stat-card-label">Pending</div>
+          </div>
+          <div class="glass-card stat-card stat-green">
+            <div class="stat-card-icon">✅</div>
+            <div class="stat-card-value" id="s-completed">0</div>
+            <div class="stat-card-label">Completed</div>
+          </div>
+          <div class="glass-card stat-card stat-purple">
+            <div class="stat-card-icon">🚑</div>
+            <div class="stat-card-value" id="s-active-drivers">0</div>
+            <div class="stat-card-label">Active Drivers</div>
+          </div>
+          <div class="glass-card stat-card stat-amber">
+            <div class="stat-card-icon">⚡</div>
+            <div class="stat-card-value" id="s-avg-resp">—</div>
+            <div class="stat-card-label">Avg Response (min)</div>
+          </div>
+        </div>
+
+        <div class="glass-card chart-card">
+          <div class="chart-title">📈 Dispatches — Last 7 Days</div>
+          <canvas id="dispatch-chart" height="80"></canvas>
+        </div>
+      </div>
+
+      <!-- DRIVERS PANEL -->
+      <div class="admin-panel" id="panel-drivers">
+        <div class="section-header">
+          <div class="section-icon">🚑</div>
+          <div>
+            <div class="section-title">All Drivers</div>
+            <div class="section-subtitle">Registered driver fleet</div>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="loadDrivers()" style="margin-left:auto;">↻ Refresh</button>
+        </div>
+        <div class="glass-card table-card">
+          <div class="table-body">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Driver</th>
+                  <th>Phone</th>
+                  <th>Vehicle</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Last Seen</th>
+                </tr>
+              </thead>
+              <tbody id="drivers-tbody">
+                <tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOS PANEL -->
+      <div class="admin-panel" id="panel-sos">
+        <div class="section-header">
+          <div class="section-icon">🆘</div>
+          <div>
+            <div class="section-title">SOS Request Log</div>
+            <div class="section-subtitle">All emergency dispatches</div>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="loadSOS()" style="margin-left:auto;">↻ Refresh</button>
+        </div>
+        <div class="glass-card table-card">
+          <div class="table-body">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>ETA</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="sos-tbody">
+                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPLAINTS PANEL -->
+      <div class="admin-panel" id="panel-complaints">
+        <div class="section-header">
+          <div class="section-icon">📩</div>
+          <div>
+            <div class="section-title">Complaints</div>
+            <div class="section-subtitle">User-submitted feedback &amp; issues</div>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="loadComplaints()" style="margin-left:auto;">↻ Refresh</button>
+        </div>
+        <div class="glass-card" id="complaints-list" style="padding:0; overflow:hidden;">
+          <div style="padding:40px; text-align:center; color:var(--text-muted);">Loading…</div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS PANEL -->
+      <div class="admin-panel" id="panel-analytics">
+        <div class="section-header">
+          <div class="section-icon">📈</div>
+          <div>
+            <div class="section-title">Analytics</div>
+            <div class="section-subtitle">Performance &amp; intelligence metrics</div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+          <div class="glass-card chart-card">
+            <div class="chart-title">🚑 Driver Status Distribution</div>
+            <canvas id="driver-status-chart"></canvas>
+          </div>
+          <div class="glass-card chart-card">
+            <div class="chart-title">🆘 SOS Status Breakdown</div>
+            <canvas id="sos-status-chart"></canvas>
+          </div>
+        </div>
+        <div class="glass-card chart-card" style="margin-top:24px;">
+          <div class="chart-title">📊 Response Time Trend</div>
+          <canvas id="response-chart" height="60"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/app.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

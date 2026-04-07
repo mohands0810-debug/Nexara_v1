@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dispatch Center — NEXARA</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div id="toast-container"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+      <circle cx="22" cy="22" r="20" stroke="#00f5ff" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.5"/>
+      <path d="M22 8L22 36 M8 22L36 22" stroke="#00f5ff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="22" r="4" fill="#00f5ff" opacity="0.8"/>
+    </svg>
+    <span class="logo-text">NEX<span>A</span>RA</span>
+  </a>
+  <div style="font-family:var(--font-display); font-size:0.7rem; letter-spacing:0.1em; color:var(--cyan); display:flex; align-items:center; gap:10px;">
+    <span style="width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); display:inline-block; animation:pulse-dot 1.5s infinite;"></span>
+    🛰️ DISPATCH COMMAND CENTER — LIVE
+  </div>
+  <div id="connection-status" class="status-pill status-offline">Connecting…</div>
+</nav>
+
+<div class="dispatch-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="dispatch-sidebar">
+
+    <!-- Ticker -->
+    <div class="ticker-bar" id="response-ticker">⚡ AVG RESPONSE: calculating…</div>
+
+    <!-- Live Counters -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div class="dispatch-counter">
+        <div class="dispatch-count-val" id="dc-online">0</div>
+        <div class="dispatch-count-lbl">Online Drivers</div>
+      </div>
+      <div class="dispatch-counter">
+        <div class="dispatch-count-val" id="dc-sos" style="color:var(--red); text-shadow:var(--red-glow);">0</div>
+        <div class="dispatch-count-lbl">Active SOS</div>
+      </div>
+    </div>
+
+    <!-- SOS Queue -->
+    <div>
+      <div style="font-family:var(--font-display); font-size:0.65rem; letter-spacing:0.15em; color:var(--red); text-transform:uppercase; margin-bottom:10px;">
+        🔴 SOS Queue
+      </div>
+      <div id="sos-queue">
+        <div style="color:var(--text-muted); font-size:0.85rem; padding:12px; text-align:center;">No active requests</div>
+      </div>
+    </div>
+
+    <!-- Online Drivers List -->
+    <div>
+      <div style="font-family:var(--font-display); font-size:0.65rem; letter-spacing:0.15em; color:var(--cyan); text-transform:uppercase; margin-bottom:10px;">
+        🚑 Active Fleet
+      </div>
+      <div id="driver-queue">
+        <div style="color:var(--text-muted); font-size:0.85rem; padding:12px; text-align:center;">No drivers online</div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="glass-card" style="padding:14px; margin-top:auto;">
+      <div style="font-family:var(--font-display); font-size:0.6rem; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:10px;">MAP LEGEND</div>
+      <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">🚑</span> Online Driver
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">🚨</span> SOS / Busy Driver
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">📍</span> Pending SOS Request
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAP -->
+  <div class="dispatch-main-map" style="position:relative;">
+    <div id="dispatch-map"></div>
+
+    <!-- Map Overlay -->
+    <div class="map-overlay">
+      <div class="map-stat-card">
+        <div class="map-stat-val" id="ov-total">0</div>
+        <div class="map-stat-lbl">Total Dispatches</div>
+      </div>
+      <div class="map-stat-card">
+        <div class="map-stat-val" id="ov-avg" style="color:var(--green);">—</div>
+        <div class="map-stat-lbl">Avg ETA (min)</div>
+      </div>
+      <div class="map-stat-card">
+        <div class="map-stat-val" id="ov-drivers" style="color:var(--purple);">0</div>
+        <div class="map-stat-lbl">Total Drivers</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/app.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/dispatch.js"></script>
+</body>
+</html>

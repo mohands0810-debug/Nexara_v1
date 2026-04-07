@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Driver Portal — NEXARA</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/driver.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div id="toast-container"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+      <circle cx="22" cy="22" r="20" stroke="#00f5ff" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.5"/>
+      <path d="M22 8L22 36 M8 22L36 22" stroke="#00f5ff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="22" r="4" fill="#00f5ff" opacity="0.8"/>
+    </svg>
+    <span class="logo-text">NEX<span>A</span>RA</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="patient.html" class="nav-link">Patient SOS</a>
+    <a href="driver.html" class="nav-link active">Driver Portal</a>
+    <a href="dispatch.html" class="nav-link">Dispatch</a>
+  </div>
+  <div id="connection-status" class="status-pill status-offline">Connecting…</div>
+</nav>
+
+<div class="driver-layout">
+
+  <!-- LEFT PANEL -->
+  <div class="driver-panel">
+
+    <!-- REGISTRATION FORM (shown if not registered) -->
+    <div id="reg-section" class="glass-card reg-form-wrap">
+      <div class="section-header" style="margin-bottom:20px;">
+        <div class="section-icon">🚑</div>
+        <div>
+          <div class="section-title">Driver Registration</div>
+          <div class="section-subtitle">Create your NEXARA profile</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="drv-name" class="form-control" placeholder="Your full name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" id="drv-phone" class="form-control" placeholder="+91 XXXXXXXXXX" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Vehicle Number</label>
+        <input type="text" id="drv-vehicle" class="form-control" placeholder="KA01AB1234" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Vehicle Type</label>
+        <select id="drv-type" class="form-control">
+          <option value="Advanced Life Support">Advanced Life Support (ALS)</option>
+          <option value="Basic Life Support">Basic Life Support (BLS)</option>
+          <option value="Patient Transport">Patient Transport</option>
+          <option value="Neonatal">Neonatal Ambulance</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="registerDriver()">
+        ⚡ Register &amp; Go Online
+      </button>
+    </div>
+
+    <!-- PROFILE CARD (shown after login) -->
+    <div id="profile-section" style="display:none; flex-direction:column; gap:16px;">
+
+      <div class="driver-profile-card visible glass-card">
+        <div class="profile-header">
+          <div class="profile-avatar">🧑‍⚕️</div>
+          <div>
+            <div class="profile-name" id="prof-name">—</div>
+            <div class="profile-id" id="prof-id">ID: —</div>
+          </div>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
+          🚑 <span id="prof-vehicle">—</span> · <span id="prof-type">—</span>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <div class="profile-stat-val" id="prof-trips">0</div>
+            <div class="profile-stat-lbl">Trips</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-val" id="prof-rating">5.0</div>
+            <div class="profile-stat-lbl">Rating</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUS TOGGLE -->
+      <div class="glass-card" style="padding:20px;">
+        <div class="status-toggle-row" style="padding:0; background:none; border:none;">
+          <div>
+            <div class="toggle-label">Driver Status</div>
+            <div id="status-text" class="text-sm" style="color:var(--text-muted); margin-top:4px;">Currently Offline</div>
+          </div>
+          <div class="toggle-switch" id="status-toggle" onclick="toggleDriverStatus()"></div>
+        </div>
+      </div>
+
+      <!-- GPS STATUS -->
+      <div class="gps-row glass-card" style="padding:14px 16px;">
+        <div class="gps-dot" id="gps-dot"></div>
+        <span style="font-size:0.85rem;">GPS Location</span>
+        <span class="gps-coords" id="gps-coords">Acquiring…</span>
+      </div>
+
+      <!-- CURRENT ASSIGNMENT -->
+      <div class="assignment-card" id="assignment-card">
+        <div class="assignment-label">🔴 Active Assignment</div>
+        <div class="assignment-info">
+          <div class="assignment-row">
+            <span class="assignment-key">Patient</span>
+            <span class="assignment-val" id="asgn-patient">—</span>
+          </div>
+          <div class="assignment-row">
+            <span class="assignment-key">Address</span>
+            <span class="assignment-val" id="asgn-address" style="font-size:0.8rem;">—</span>
+          </div>
+          <div class="assignment-row">
+            <span class="assignment-key">Distance</span>
+            <span class="assignment-val" id="asgn-dist">—</span>
+          </div>
+          <div class="assignment-row">
+            <span class="assignment-key">ETA</span>
+            <span class="assignment-val" id="asgn-eta">—</span>
+          </div>
+        </div>
+        <a href="#" class="patient-call-link" id="patient-call-link">
+          📞 Call Patient: <span id="asgn-phone">—</span>
+        </a>
+        <button class="btn btn-success btn-block" onclick="completeTrip()">
+          ✓ Mark Trip Complete
+        </button>
+      </div>
+
+      <!-- NO ASSIGNMENT -->
+      <div id="no-assignment" class="glass-card" style="padding:20px; text-align:center; color:var(--text-muted); display:none;">
+        <div style="font-size:2rem; margin-bottom:8px;">🟢</div>
+        <div style="font-family:var(--font-display); font-size:0.75rem; letter-spacing:0.1em;">WAITING FOR DISPATCH</div>
+        <div style="font-size:0.8rem; margin-top:8px;">Stay online. NEXARA auto-assigns the nearest SOS.</div>
+      </div>
+
+      <!-- LOGOUT -->
+      <button class="btn btn-sm" onclick="logoutDriver()" style="color:var(--text-muted); border:1px solid var(--border); background:transparent;">
+        ← Log Out / Switch Driver
+      </button>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: MAP -->
+  <div class="driver-map-area">
+    <div id="driver-map"></div>
+  </div>
+
+</div>
+
+<!-- CHATBOT -->
+<button id="chatbot-btn" onclick="toggleChatbot()" title="Assistant">🤖</button>
+<div id="chatbot-panel" class="glass-card">
+  <div class="chatbot-header">
+    <span class="chatbot-title">⚡ NEXARA ASSISTANT</span>
+    <button onclick="toggleChatbot()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;">✕</button>
+  </div>
+  <div class="chatbot-messages" id="chatbot-messages"></div>
+  <div class="chatbot-input-row">
+    <input type="text" id="chatbot-input" placeholder="Ask anything…" />
+    <button class="chatbot-send" onclick="sendChatMessage()">➤</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/app.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/driver.js"></script>
+</body>
+</html>

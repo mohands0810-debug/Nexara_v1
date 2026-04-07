@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXARA — Emergency Response Intelligence</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/landing.css" />
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="scan-line"></div>
+<div id="toast-container"></div>
+
+<!-- ── NAVBAR ──────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="18" stroke="rgba(125,211,252,0.3)" stroke-width="1" stroke-dasharray="3 2"/>
+      <circle cx="20" cy="20" r="11" stroke="rgba(125,211,252,0.5)" stroke-width="1"/>
+      <!-- Cross -->
+      <path d="M20 9 L20 31" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round"/>
+      <path d="M9 20 L31 20" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round"/>
+      <!-- Accent -->
+      <path d="M14 14 L18 18 M22 22 L26 26" stroke="#f43f5e" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+      <circle cx="20" cy="20" r="3" fill="#7dd3fc" opacity="0.9"/>
+    </svg>
+    <span class="logo-text">NEX<span>A</span>RA</span>
+  </a>
+
+  <div class="nav-links">
+    <a href="index.html" class="nav-link active">Home</a>
+    <a href="patient.html" class="nav-link">Emergency SOS</a>
+    <a href="driver.html" class="nav-link">Driver Portal</a>
+    <a href="dispatch.html" class="nav-link">Dispatch Center</a>
+    <a href="admin.html" class="nav-link">Admin</a>
+  </div>
+
+  <div class="stats-strip" id="live-stats">
+    <div class="stat-item">
+      <span class="stat-value" id="stat-drivers">—</span>
+      <span class="stat-label">Online</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value" id="stat-sos">—</span>
+      <span class="stat-label">Active SOS</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    AI-Powered Emergency Response · Live Since 2025
+  </div>
+
+  <h1 class="hero-title">
+    <span class="hero-title-main">NEXARA</span>
+    <span class="hero-title-sub">Every Second Is Sacred</span>
+  </h1>
+
+  <p class="hero-tagline">
+    The world's most intelligent ambulance dispatch system. Real-time, autonomous, precise — because when crisis strikes, hesitation costs lives.
+  </p>
+
+  <div class="hero-cta">
+    <a href="patient.html" class="btn btn-danger btn-xl">
+      🚨 Emergency SOS
+    </a>
+    <a href="driver.html" class="btn btn-primary btn-xl">
+      🚑 Driver Portal
+    </a>
+    <a href="dispatch.html" class="btn btn-ghost btn-lg">
+      🛰️ Dispatch Center
+    </a>
+  </div>
+
+  <!-- Metric strip -->
+  <div class="hero-metrics">
+    <div class="hero-metric">
+      <span class="metric-icon">⚡</span>
+      <span class="metric-value" id="count-response">2.4</span>
+      <span class="metric-label">Min Avg Response</span>
+    </div>
+    <div class="hero-metric">
+      <span class="metric-icon">🤖</span>
+      <span class="metric-value">AI</span>
+      <span class="metric-label">Auto-Dispatch</span>
+    </div>
+    <div class="hero-metric">
+      <span class="metric-icon">🛰️</span>
+      <span class="metric-value">Live</span>
+      <span class="metric-label">GPS Tracking</span>
+    </div>
+    <div class="hero-metric">
+      <span class="metric-icon">📡</span>
+      <span class="metric-value">&lt;100ms</span>
+      <span class="metric-label">Socket Latency</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ─────────────────────────────────────────────── -->
+<section class="how-section">
+  <div style="text-align:center; margin-bottom:12px;">
+    <span class="section-tag">Protocol</span>
+    <h2 class="section-heading">Emergency in <span class="text-glow-cyan">3 Steps</span></h2>
+    <p style="color:var(--text-secondary); max-width:480px; margin:0 auto; font-size:0.93rem; font-weight:300;">From panic to paramedics — NEXARA collapses the gap between crisis and care.</p>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-number">01</div>
+      <span class="step-icon">📱</span>
+      <div class="step-title">Activate SOS</div>
+      <p class="step-desc">One tap sends your precise GPS coordinates, identity, and medical priority to the NEXARA intelligence core. Voice activation also supported.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">02</div>
+      <span class="step-icon">🧠</span>
+      <div class="step-title">AI Dispatches</div>
+      <p class="step-desc">Our Haversine-based engine calculates the nearest ambulance in milliseconds, scoring priority and estimated arrival time — fully autonomous.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">03</div>
+      <span class="step-icon">🚑</span>
+      <div class="step-title">Help Arrives</div>
+      <p class="step-desc">The assigned driver receives patient details, phone contact, and live map navigation. You can call each other directly from the app.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ─────────────────────────────────────────────────── -->
+<section class="features-section">
+  <div style="text-align:center; max-width:1160px; margin:0 auto;">
+    <span class="section-tag">Capabilities</span>
+    <h2 class="section-heading">Built for the <span class="text-glow-red">Worst Moments</span></h2>
+  </div>
+  <div class="features-grid">
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">🛰️</div>
+      <div class="feature-card-title">Real-Time GPS Tracking</div>
+      <p class="feature-card-desc">Live map shows every ambulance position updating every 5 seconds. Patients see the vehicle moving toward them.</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">🤖</div>
+      <div class="feature-card-title">AI Auto-Dispatch</div>
+      <p class="feature-card-desc">Haversine formula + traffic modeling selects the nearest available driver automatically. Zero human delay.</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">📞</div>
+      <div class="feature-card-title">Direct Communication</div>
+      <p class="feature-card-desc">Patient and driver can call each other with one tap. Phone numbers shared securely post-dispatch only.</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">🗄️</div>
+      <div class="feature-card-title">Persistent Database</div>
+      <p class="feature-card-desc">Full SQLite backend stores drivers, SOS history, dispatch logs, complaints, and analytics.</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">⚡</div>
+      <div class="feature-card-title">WebSocket Real-Time</div>
+      <p class="feature-card-desc">Socket.IO keeps all clients in sync instantly. Driver status changes appear on patient side in &lt;100ms.</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">🎙️</div>
+      <div class="feature-card-title">Voice SOS Trigger</div>
+      <p class="feature-card-desc">Say "emergency" or "help" to activate SOS hands-free — vital when physical interaction isn't possible.</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">📊</div>
+      <div class="feature-card-title">Analytics Dashboard</div>
+      <p class="feature-card-desc">Admin panel with response time charts, dispatch history, driver activity, and complaint management.</p>
+    </div>
+    <div class="glass-card feature-card">
+      <div class="feature-card-icon">🛡️</div>
+      <div class="feature-card-title">Smart Queue</div>
+      <p class="feature-card-desc">SOS requests queue automatically when no drivers are online, and auto-assign the moment one goes active.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────────────────────── -->
+<section class="cta-section">
+  <h2 class="cta-heading">Ready to <span class="text-glow-red">Save Lives?</span></h2>
+  <p class="cta-sub">Join NEXARA — where technology meets humanity's most urgent needs.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a href="patient.html" class="btn btn-danger btn-xl">🚨 Send Emergency SOS</a>
+    <a href="driver.html" class="btn btn-primary btn-xl">🚑 Register as Driver</a>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer">
+    <div class="footer-text">© 2025 NEXARA EMERGENCY SYSTEMS · ALL RIGHTS RESERVED</div>
+    <div class="footer-links">
+      <a href="admin.html" class="footer-link">Admin Panel</a>
+      <a href="dispatch.html" class="footer-link">Dispatch Center</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── CHATBOT ───────────────────────────────────────────────────── -->
+<button id="chatbot-btn" onclick="toggleChatbot()" title="NEXARA Assistant">🤖</button>
+<div id="chatbot-panel" class="glass-card">
+  <div class="chatbot-header">
+    <span class="chatbot-title">⚡ NEXARA ASSISTANT</span>
+    <button onclick="toggleChatbot()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1rem;">✕</button>
+  </div>
+  <div class="chatbot-messages" id="chatbot-messages"></div>
+  <div class="chatbot-input-row">
+    <input type="text" id="chatbot-input" placeholder="Ask anything about NEXARA..." />
+    <button class="chatbot-send" onclick="sendChatMessage()">➤</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/app.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>

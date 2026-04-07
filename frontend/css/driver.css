@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════════════════════════
+   NEXARA — Driver Dashboard v2
+   ═══════════════════════════════════════════════════════════════ */
+
+.driver-layout {
+  display: grid; grid-template-columns: 380px 1fr;
+  min-height: 100vh; padding-top: 64px;
+}
+
+.driver-panel {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  padding: 26px 22px;
+  overflow-y: auto; z-index: 10;
+  display: flex; flex-direction: column; gap: 18px;
+  position: relative;
+}
+
+.driver-panel::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--ice), transparent 60%); opacity: 0.4;
+}
+
+/* Registration form */
+.reg-form-wrap { padding: 24px 20px; transition: var(--transition-slow); }
+
+/* Status toggle */
+.status-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-radius: var(--r-md);
+  background: var(--bg-glass); border: 1px solid var(--border);
+}
+.toggle-label { font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; }
+
+.toggle-switch {
+  width: 52px; height: 26px; border-radius: 13px; position: relative;
+  background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+  cursor: pointer; transition: var(--transition);
+}
+.toggle-switch.online { background: rgba(52,211,153,0.18); border-color: var(--ops-border); box-shadow: var(--ops-glow); }
+.toggle-switch::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--text-muted); transition: var(--transition);
+}
+.toggle-switch.online::after { left: calc(100% - 21px); background: var(--ops); box-shadow: 0 0 8px var(--ops); }
+
+/* Profile card */
+.driver-profile-card {
+  padding: 18px; border-radius: var(--r-md);
+  background: var(--bg-glass); border: 1px solid var(--border); display: none;
+}
+.driver-profile-card.visible { display: block; }
+
+.profile-header { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; }
+.profile-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--ice-dim), var(--violet-dim));
+  border: 1px solid var(--ice-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.profile-name { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; margin-bottom: 3px; }
+.profile-id { font-family: var(--font-mono); font-size: 0.65rem; color: var(--ice); opacity: 0.75; }
+
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.profile-stat {
+  padding: 12px 10px; text-align: center;
+  background: rgba(0,0,0,0.25); border-radius: var(--r-sm); border: 1px solid var(--border);
+}
+.profile-stat-val { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--ice); }
+.profile-stat-lbl { font-size: 0.58rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+/* Assignment card */
+.assignment-card {
+  padding: 18px; border-radius: var(--r-md);
+  border: 1px solid var(--ice-border); background: var(--ice-dim);
+  display: none; animation: fade-in-up 0.4s ease;
+}
+.assignment-card.visible { display: block; }
+
+.assignment-label {
+  font-family: var(--font-mono); font-size: 0.6rem; font-weight: 400;
+  letter-spacing: 0.14em; color: var(--ice); text-transform: uppercase;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px; opacity: 0.85;
+}
+.assignment-label::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--ice); box-shadow: 0 0 8px var(--ice); animation: pulse-dot 1s infinite;
+}
+
+.assignment-info { margin-bottom: 14px; }
+.assignment-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 7px 0; border-bottom: 1px solid rgba(125,211,252,0.08);
+}
+.assignment-row:last-child { border-bottom: none; }
+.assignment-key { font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.05em; }
+.assignment-val { font-size: 0.87rem; font-weight: 600; text-align: right; max-width: 60%; }
+
+.patient-call-link {
+  display: flex; align-items: center; gap: 8px; padding: 11px 14px;
+  border-radius: var(--r-sm); background: var(--ops-dim);
+  border: 1px solid var(--ops-border); color: var(--ops);
+  text-decoration: none; font-family: var(--font-display);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+  transition: var(--transition); text-align: center; justify-content: center; margin-bottom: 10px;
+}
+.patient-call-link:hover { background: rgba(52,211,153,0.2); box-shadow: var(--ops-glow); }
+
+/* GPS status */
+.gps-row {
+  display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+  border-radius: var(--r-md); background: var(--bg-glass); border: 1px solid var(--border);
+  font-size: 0.83rem;
+}
+.gps-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
+.gps-dot.active { background: var(--ops); box-shadow: 0 0 8px var(--ops); animation: pulse-dot 2s infinite; }
+.gps-coords { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ice); margin-left: auto; opacity: 0.75; }
+
+/* Map */
+.driver-map-area { position: relative; min-height: calc(100vh - 64px); }
+#driver-map { width: 100%; height: 100%; min-height: calc(100vh - 64px); }
+
+@media (max-width: 900px) {
+  .driver-layout { grid-template-columns: 1fr; }
+  .driver-map-area { height: 50vh; }
+}

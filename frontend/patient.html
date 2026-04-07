@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency SOS — NEXARA</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/patient.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div id="toast-container"></div>
+
+<!-- ── NAVBAR ──────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+      <circle cx="22" cy="22" r="20" stroke="#00f5ff" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.5"/>
+      <path d="M22 8L22 36 M8 22L36 22" stroke="#00f5ff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="22" r="4" fill="#00f5ff" opacity="0.8"/>
+    </svg>
+    <span class="logo-text">NEX<span>A</span>RA</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="patient.html" class="nav-link active">Emergency SOS</a>
+    <a href="driver.html" class="nav-link">Driver Portal</a>
+    <a href="dispatch.html" class="nav-link">Dispatch</a>
+  </div>
+  <div id="connection-status" class="status-pill status-offline">Connecting…</div>
+</nav>
+
+<!-- ── MAIN LAYOUT ──────────────────────────────────────────────── -->
+<div class="patient-layout">
+
+  <!-- LEFT PANEL -->
+  <div class="patient-panel">
+
+    <div class="patient-header">
+      <h2 class="patient-title">🚨 Emergency SOS</h2>
+      <p class="patient-subtitle">Your location is auto-detected · Fill details · Press SOS</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input type="text" id="patient-name" class="form-control" placeholder="Full name" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="tel" id="patient-phone" class="form-control" placeholder="+91 XXXXXXXXXX" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Location Address</label>
+      <input type="text" id="patient-address" class="form-control" placeholder="Auto-detecting…" readonly />
+      <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+        <span id="gps-status-dot" style="width:8px;height:8px;border-radius:50%;background:#ff9f0a;display:inline-block;flex-shrink:0;"></span>
+        <span id="gps-status-text" style="font-size:0.75rem;color:var(--text-muted);">Acquiring GPS…</span>
+        <button id="gps-refresh-btn" onclick="retryGPS()" style="margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--cyan);border-radius:6px;padding:2px 10px;font-size:0.72rem;cursor:pointer;">⟳ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Emergency Priority -->
+    <div class="form-group">
+      <label class="form-label">Emergency Type</label>
+      <div class="priority-selector">
+        <div class="priority-badge active" data-val="cardiac">❤️ Cardiac</div>
+        <div class="priority-badge" data-val="accident">🚗 Accident</div>
+        <div class="priority-badge" data-val="stroke">🧠 Stroke</div>
+        <div class="priority-badge" data-val="other">⚠️ Other</div>
+      </div>
+    </div>
+
+    <!-- Voice SOS Toggle -->
+    <div style="text-align:center; margin-bottom:8px;">
+      <div class="voice-indicator" id="voice-toggle" onclick="toggleVoice()">
+        <div class="voice-dot"></div>
+        <span id="voice-label">Enable Voice SOS</span>
+      </div>
+    </div>
+
+    <!-- SOS Button -->
+    <div class="sos-btn-wrapper">
+      <button class="sos-button" id="sos-btn" onclick="triggerSOS()">
+        <span class="sos-btn-icon">🆘</span>
+        <span class="sos-btn-text">SOS</span>
+        <span class="sos-btn-sub">Tap to send emergency alert</span>
+      </button>
+    </div>
+
+    <!-- Cancel Bar -->
+    <div class="cancel-bar" id="cancel-bar">
+      <div class="cancel-text">Sending alert in…</div>
+      <div class="cancel-count" id="cancel-count">10</div>
+      <button class="btn btn-sm" onclick="cancelSOS()" style="margin-top:10px;color:var(--text-secondary);border-color:var(--border);background:transparent;">✕ Cancel</button>
+    </div>
+
+    <!-- Dispatch Status -->
+    <div class="dispatch-status" id="dispatch-status">
+      <div class="dispatch-label" id="dispatch-status-label">🔴 Locating nearest ambulance…</div>
+      <div class="dispatch-grid" id="dispatch-grid" style="display:none;">
+        <div class="dispatch-item">
+          <div class="dispatch-value" id="disp-eta">—</div>
+          <div class="dispatch-unit">Min ETA</div>
+        </div>
+        <div class="dispatch-item">
+          <div class="dispatch-value" id="disp-dist">—</div>
+          <div class="dispatch-unit">KM Away</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assigned Driver Card -->
+    <div class="driver-card" id="driver-card">
+      <div class="driver-card-header">
+        <div class="driver-avatar">🧑‍⚕️</div>
+        <div>
+          <div class="driver-name" id="driver-name">—</div>
+          <div class="driver-vehicle" id="driver-vehicle">—</div>
+        </div>
+      </div>
+      <div class="status-pill status-online" style="margin-bottom:10px;">✅ Ambulance Dispatched</div>
+      <a href="#" class="driver-phone-link" id="driver-phone-link">
+        📞 Call Driver: <span id="driver-phone-display">—</span>
+      </a>
+      <button class="btn btn-sm btn-success btn-block" style="margin-top:10px;" onclick="markArrived()">
+        ✓ Mark as Arrived
+      </button>
+    </div>
+
+    <!-- Nearest Hospital Card -->
+    <div class="driver-card" id="hospital-card" style="display:none; margin-top:12px;">
+      <div style="font-family:var(--font-display); font-size:0.65rem; letter-spacing:0.12em; color:var(--cyan); margin-bottom:10px;">
+        🏥 NEAREST HOSPITAL
+      </div>
+      <div class="driver-card-header" style="margin-bottom:8px;">
+        <div class="driver-avatar" style="background:rgba(0,245,255,0.08); border-color:var(--cyan);">🏥</div>
+        <div>
+          <div class="driver-name" id="hosp-name">—</div>
+          <div class="driver-vehicle" id="hosp-type">—</div>
+        </div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;">
+        📍 <span id="hosp-address">—</span>
+      </div>
+      <div style="display:flex; gap:12px; margin-bottom:10px;">
+        <div class="dispatch-item" style="flex:1;">
+          <div class="dispatch-value" id="hosp-dist">—</div>
+          <div class="dispatch-unit">KM Away</div>
+        </div>
+        <div class="dispatch-item" style="flex:1;">
+          <div class="dispatch-value" id="hosp-eta">—</div>
+          <div class="dispatch-unit">Min ETA</div>
+        </div>
+      </div>
+      <a href="#" class="driver-phone-link" id="hosp-phone-link" style="margin-bottom:12px; display:block;">
+        📞 Hospital: <span id="hosp-phone">—</span>
+      </a>
+
+      <!-- Doctors list -->
+      <div style="font-family:var(--font-display); font-size:0.6rem; letter-spacing:0.12em; color:var(--cyan); margin-bottom:8px; border-top:1px solid var(--border); padding-top:10px;">
+        👨‍⚕️ ON-DUTY DOCTORS
+      </div>
+      <div id="hosp-doctors" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider"></div>
+
+    <!-- SOS History -->
+    <div style="font-family:var(--font-display); font-size:0.7rem; letter-spacing:0.1em; color:var(--cyan); margin-bottom:12px;">RECENT ACTIVITY</div>
+    <div id="sos-history" style="font-size:0.85rem; color:var(--text-muted);">No recent SOS requests.</div>
+
+  </div>
+
+  <!-- RIGHT: MAP -->
+  <div class="patient-map-area">
+    <div id="patient-map"></div>
+  </div>
+
+</div>
+
+<!-- ── CHATBOT ──────────────────────────────────────────────────── -->
+<button id="chatbot-btn" onclick="toggleChatbot()" title="NEXARA Assistant">🤖</button>
+<div id="chatbot-panel" class="glass-card">
+  <div class="chatbot-header">
+    <span class="chatbot-title">⚡ NEXARA ASSISTANT</span>
+    <button onclick="toggleChatbot()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;">✕</button>
+  </div>
+  <div class="chatbot-messages" id="chatbot-messages"></div>
+  <div class="chatbot-input-row">
+    <input type="text" id="chatbot-input" placeholder="Ask me anything…" />
+    <button class="chatbot-send" onclick="sendChatMessage()">➤</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/app.js"></script>
+<script src="js/socket.js"></script>
+<!-- ✏️  Paste your Google Maps API key below to enable live hospital search.
+         Leave as empty string '' to use the built-in Bengaluru hospital DB. -->
+<script>
+  window.NEXARA_GOOGLE_API_KEY = '';  // e.g. 'AIzaSy...'
+</script>
+<script src="js/chatbot.js"></script>
+<script src="js/patient.js"></script>
+</body>
+</html>
